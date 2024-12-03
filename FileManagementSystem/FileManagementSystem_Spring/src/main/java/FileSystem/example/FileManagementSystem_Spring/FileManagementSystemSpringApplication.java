@@ -7,7 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FileManagementSystemSpringApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FileManagementSystemSpringApplication.class, args);
+		try {
+			SpringApplication.run(FileManagementSystemSpringApplication.class, args);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
