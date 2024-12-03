@@ -1,5 +1,8 @@
 package FileSystem.example.FileManagementSystem_Spring.Methods;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class RequiredMethods {
     // Todo - finish all methods
 
