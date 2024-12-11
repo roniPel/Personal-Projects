@@ -1,8 +1,8 @@
 package FileSystem.example.FileManagementSystem_Spring.Exceptions;
 
-public class Exception extends java.lang.Exception {
+public class FileManageException extends java.lang.Exception {
 
-    public Exception(Errors errors) {
+    public FileManageException(Errors errors) {
         super(errors.getMessage());
     }
 }
