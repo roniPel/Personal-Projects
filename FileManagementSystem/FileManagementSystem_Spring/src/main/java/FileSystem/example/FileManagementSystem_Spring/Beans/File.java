@@ -1,8 +1,6 @@
 package FileSystem.example.FileManagementSystem_Spring.Beans;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -15,19 +13,13 @@ import java.time.LocalDate;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Length(min=1, max=32)
     private String name;
     private long size;
     private LocalDate creationDate;
+    @Column(name = "directory_id")
+    @NotNull
+    private Integer directoryId;
 
-    @Override
-    public String toString() {
-        return "File{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", size=" + size +
-                ", creationDate=" + creationDate +
-                '}';
-    }
 }

@@ -45,7 +45,10 @@ public class Test_CRUD implements CommandLineRunner {
     }
 
     private void GenerateMainDirectory() throws FileManageException {
-        requiredMethods.addDir(null,null);
+        System.out.println("*** Generate Main Directory ***");
+        System.out.println("Directory id: "+
+        requiredMethods.addDir(null,null) );
+        System.out.println();
     }
 
     private void ShowAll() {
@@ -85,8 +88,7 @@ public class Test_CRUD implements CommandLineRunner {
         //System.out.println("Please insert a Directory Name: ");
         String parentDirName = "Main Directory";
         String dirName = "Test Dir 1";
-        System.out.print("Directory added successfully? ");
-        System.out.println(
+        System.out.println("New Directory Id: "+
                 requiredMethods.addDir(parentDirName,dirName));
         System.out.println();
     }
@@ -96,9 +98,8 @@ public class Test_CRUD implements CommandLineRunner {
         String parentDirName = "Test Dir 1";
         String fileName = "Test File 1";
         long fileSize = FactoryUtils.GenerateRandomSize();
-        System.out.print("File added successfully? ");
-        System.out.println(
-                requiredMethods.addFile(parentDirName,fileName,fileSize));
+        System.out.println("New File Id: "+
+                requiredMethods.addFile(parentDirName,fileName,fileSize) );
         System.out.println();
     }
 

@@ -13,27 +13,21 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Getter
+@Setter
 public class Directory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Length(min=1, max=32)
     @Column(length = 32)
     private String name;
     private LocalDate creationDate;
-    @OneToOne
+    @Singular
+    @OneToMany(cascade = CascadeType.ALL,
+        orphanRemoval = true)
+    @JoinColumn(name = "directory_id")
     private List<File> files;
     @NotNull
     private int parentDirId;
 
-    @Override
-    public String toString() {
-        return "Directory{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", creationDate=" + creationDate +
-                ", files=" + files +
-                ", parentDirId=" + parentDirId +
-                '}';
-    }
 }

@@ -7,6 +7,7 @@ import FileSystem.example.FileManagementSystem_Spring.Exceptions.FileManageExcep
 import FileSystem.example.FileManagementSystem_Spring.Repositories.DirectoryRepository;
 import FileSystem.example.FileManagementSystem_Spring.Repositories.FileRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.LazyInitializationException;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class RequiredMethods {
 
     private final DirectoryRepository dirRepo;
     private final FileRepository fileRepo;
+    private Integer mainDirId;
     // Todo - finish all methods + add Complexity
 
     /**
@@ -28,48 +30,60 @@ public class RequiredMethods {
      * @param fileSize
      * @return true if object was created successfully, exception if it was not created
      */
-    public boolean addFile(String parentDirName, String fileName, Long fileSize) throws FileManageException {
+    public int addFile(String parentDirName, String fileName, Long fileSize) throws FileManageException {
         if(fileRepo.existsByName(fileName) || dirRepo.existsByName(fileName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
-        Directory parentDir = dirRepo.findByName(parentDirName);
-        if(parentDir == null) {
+        Directory parentDir;
+        try {
+            parentDir = dirRepo.findByName(parentDirName);
+            File file = File.builder()
+                    .creationDate(LocalDate.now())
+                    .name(fileName)
+                    .size(fileSize)
+                    .directoryId(parentDir.getId())
+                    .build();
+            fileRepo.saveAndFlush(file);
+            System.out.println(file);
+
+            List<File> files = new ArrayList<>();;
+            files.add(file);
+            parentDir.setFiles(files);
+            //fileRepo.saveAll(files);
+            dirRepo.saveAndFlush(parentDir);
+            return fileRepo.findByName(fileName).getId();
+        } catch (LazyInitializationException e) {
             throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
         }
 
-        File file = File.builder()
-                .creationDate(LocalDate.now())
-                .name(fileName)
-                .size(fileSize)
-                .build();
-        System.out.println(file.toString());
 
-        List<File> files = new ArrayList<>(parentDir.getFiles());
-        files.add(file);
-        dirRepo.saveAndFlush(parentDir);
-        return true;
+    }
+
+    private void SaveFiles(List<File> files) {
     }
 
     /**
      * Adds a new Directory under the parent Directory
      * @param parentDirName
      * @param dirName
-     * @return true if object was created successfully, exception if it was not created
+     * @return id of object if object was created successfully, exception if it was not created
      */
-    public boolean addDir(String parentDirName, String dirName) throws FileManageException {
+    public int addDir(String parentDirName, String dirName) throws FileManageException {
         // Special case - creation of first (main) directory
-        if(parentDirName== null && dirName == null){
+        if((parentDirName== null) && (dirName == null) ){
             Directory mainDir = Directory.builder()
-                    .id(0)
-                    .name("MainDir")
+                    .name("Main Directory")
                     .creationDate(LocalDate.now())
                     .parentDirId(0)
                     .build();
+            dirRepo.saveAndFlush(mainDir);
+            setMainDirId(dirRepo.findByName("Main Directory").getId());
+            return mainDirId;
         }
         if(dirRepo.existsByName(dirName) || fileRepo.existsByName(dirName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
-        int parentDirId = 0;
+        int parentDirId = mainDirId;
         Directory parentDir = FindDirId(parentDirName);
         if(parentDir != null) {
             parentDirId = parentDir.getId();
@@ -93,7 +107,7 @@ public class RequiredMethods {
                 .build();
         System.out.println(directory.toString());
         dirRepo.saveAndFlush(directory);
-        return true;
+        return dirRepo.findByName(dirName).getId();
     }
 
     /**
@@ -138,11 +152,8 @@ public class RequiredMethods {
      */
     public void showFileSystem(){
         List<Directory> directories = dirRepo.findAll();
-        List<File> files = fileRepo.findAll();
         System.out.println("Directories: ");
         System.out.println(directories);
-        System.out.println("Files: ");
-        System.out.println(files);
     }
 
     /**
@@ -165,4 +176,7 @@ public class RequiredMethods {
         return true;
     }
 
+    public void setMainDirId(Integer mainDirId) {
+        this.mainDirId = mainDirId;
+    }
 }
