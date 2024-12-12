@@ -153,7 +153,16 @@ public class RequiredMethods {
     public void showFileSystem(){
         List<Directory> directories = dirRepo.findAll();
         System.out.println("Directories: ");
-        System.out.println(directories);
+        //directories.forEach();
+//        for(Directory dir : directories) {
+//            System.out.println(
+//            "Company{" +
+//                    "id=" + dir.getId() +
+//                    ", name='" + dir.getName() + '\'' +
+//                    ", creation date='" + dir.getCreationDate() + '\'' +
+//                    ", files=" + dir.getFiles() +
+//                    '}'+"\n");
+//        }
     }
 
     /**
