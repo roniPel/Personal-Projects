@@ -23,13 +23,26 @@ public class Test_CRUD implements CommandLineRunner {
             // CRUD - Create, Read, Update, Delete
             GenerateMainDirectory();
             // Add Dir
-            AddDir();
+            String parentDirName = "Main Directory";
+            String dirName = "Test Dir 1";
+            AddDir(parentDirName,dirName);
+
+            parentDirName = "Test Dir 1";
+            dirName = "Test Dir 2";
+            AddDir(parentDirName,dirName);
 
             // Add File
-            AddFile();
+            String parentDirName2 = "Test Dir 1";
+            String fileName = "Test File 1";
+            AddFile(parentDirName2,fileName);
+
+            parentDirName2 = "Test Dir 2";
+            fileName = "Test File 2";
+            AddFile(parentDirName2,fileName);
 
             // Get file size
-            GetFileSize();
+            String fileNameSize = "Test File 1";
+            GetFileSize(fileNameSize);
 
             // Get Biggest File
             GetBiggestFile();
@@ -75,28 +88,23 @@ public class Test_CRUD implements CommandLineRunner {
         System.out.println();
     }
 
-    private void GetFileSize() {
+    private void GetFileSize(String fileName) {
         System.out.println("*** Get File Size Method ***");
-        String fileName = "Test File 1";
         System.out.print("File '"+ fileName + "' size is: ");
         System.out.println(requiredMethods.getFileSize(fileName));
         System.out.println();
     }
 
-    private void AddDir() throws FileManageException {
+    private void AddDir(String parentDirName, String dirName) throws FileManageException {
         System.out.println("*** Add Directory Method ***");
         //System.out.println("Please insert a Directory Name: ");
-        String parentDirName = "Main Directory";
-        String dirName = "Test Dir 1";
         System.out.println("New Directory Id: "+
                 requiredMethods.addDir(parentDirName,dirName));
         System.out.println();
     }
 
-    private void AddFile() throws FileManageException {
+    private void AddFile(String parentDirName, String fileName) throws FileManageException {
         System.out.println("*** Add File Method ***");
-        String parentDirName = "Test Dir 1";
-        String fileName = "Test File 1";
         long fileSize = FactoryUtils.GenerateRandomSize();
         System.out.println("New File Id: "+
                 requiredMethods.addFile(parentDirName,fileName,fileSize) );

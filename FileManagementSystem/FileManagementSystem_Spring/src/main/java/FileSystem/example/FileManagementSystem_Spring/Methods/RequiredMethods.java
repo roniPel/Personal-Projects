@@ -152,7 +152,7 @@ public class RequiredMethods {
      */
     public void showFileSystem(){
         List<Directory> directories = dirRepo.findAll();
-        System.out.println("Directories: ");
+        System.out.println("Directories: "+directories);
         //directories.forEach();
 //        for(Directory dir : directories) {
 //            System.out.println(
