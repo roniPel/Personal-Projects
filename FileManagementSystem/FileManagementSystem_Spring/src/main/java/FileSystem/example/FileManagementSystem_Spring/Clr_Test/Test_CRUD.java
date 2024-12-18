@@ -88,7 +88,7 @@ public class Test_CRUD implements CommandLineRunner {
         System.out.println();
     }
 
-    private void GetFileSize(String fileName) {
+    private void GetFileSize(String fileName) throws FileManageException {
         System.out.println("*** Get File Size Method ***");
         System.out.print("File '"+ fileName + "' size is: ");
         System.out.println(requiredMethods.getFileSize(fileName));

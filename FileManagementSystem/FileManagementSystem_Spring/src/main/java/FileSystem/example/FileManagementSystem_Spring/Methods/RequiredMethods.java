@@ -26,25 +26,30 @@ public class RequiredMethods {
 
     /**
      * Adds a new File under the Directory branch
-     * @param parentDirName
-     * @param fileName
-     * @param fileSize
+     * @param parentDirName - parent directory name
+     * @param fileName - new file name
+     * @param fileSize - new file size
      * @return true if object was created successfully, exception if it was not created
-     * Complexity: time - o(n), space - o(1)
+     * Complexity: time - o(log(n)), space - o(1)
      */
     public boolean addFile(String parentDirName, String fileName, Long fileSize) throws FileManageException {
+        // Verifications:
+        // Case: filename already exists
         if(fileRepo.existsByName(fileName) || dirRepo.existsByName(fileName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
+        // case: parent directory doesn't exist
         Directory parentDir;
         parentDir = dirRepo.findById(parentDirName).orElseThrow(
                 ()-> new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST)
         );
+
+        // Create new file
         File file = File.builder()
                 .creationDate(LocalDate.now())
                 .name(fileName)
                 .size(fileSize)
-                .directoryId(parentDir.getName())
+                .directoryName(parentDir.getName())
                 .build();
         fileRepo.saveAndFlush(file);
         System.out.println(file);
@@ -57,20 +62,20 @@ public class RequiredMethods {
         return true;
     }
 
-    private void SaveFiles(List<File> files) {
-    }
-
     /**
      * Adds a new Directory under the parent Directory
-     * @param parentDirName
-     * @param dirName
-     * @return id of object if object was created successfully, exception if it was not created
+     * @param parentDirName - parent directory name
+     * @param dirName - new directory name
      * @return true if object was created successfully, exception if it was not created
-     * Complexity: time - o(n), space - o(1)
+     * Complexity: time - o(log(n)), space - o(1)
      */
     public boolean addDir(String parentDirName, String dirName) throws FileManageException {
+        // Verifications:
         // Special case - creation of first (main) directory
         if((parentDirName== null) && (dirName == null) ){
+            if(dirRepo.existsById(mainDirName)){
+                throw new FileManageException(Errors.GENERAL_ERROR);
+            }
             Directory mainDir = Directory.builder()
                     .name(mainDirName)
                     .creationDate(LocalDate.now())
@@ -79,13 +84,16 @@ public class RequiredMethods {
             dirRepo.saveAndFlush(mainDir);
             return true;
         }
+        // case: Parent Dir doesn't exist / value entered is null
+        if( (parentDirName==null) || (!dirRepo.existsById(parentDirName)) ) {
+            throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
+        }
+        // case: directory/ file name already exists
         if(dirRepo.existsById(dirName) || fileRepo.existsByName(dirName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
-        if(!dirRepo.existsByName(parentDirName)){
-            throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
-        }
-        //Todo - finish method
+
+        // Create new directory
         Directory parentDirectory = Directory.builder()
                 .creationDate(LocalDate.now())
                 .name(parentDirName)
@@ -99,41 +107,28 @@ public class RequiredMethods {
         Directory directory = Directory.builder()
                 .creationDate(LocalDate.now())
                 .name(dirName)
-                .parentDirId(parentDirId)
                 .build();
         System.out.println(directory.toString());
         dirRepo.saveAndFlush(directory);
-        return dirRepo.findByName(dirName).getId();
-    }
-
-    /**
-     *
-     * @param parentDirName
-     * @return directory Id if exists, null if it doesn't exist
-     * Complexity: time - o(n), space - o(1)
-     */
-    private Directory FindDirId(String parentDirName) throws FileManageException {
-        if(!dirRepo.existsByName(parentDirName)) {
-            return null;
-        }
-        return dirRepo.findByName(parentDirName);
+        return true;
     }
 
     /**
      * Returns the size of the given file
-     * @param fileName
-     * @return file's size if exists, 0 if doesn't exist
+     * @param fileName - file name
+     * @return file's size if exists, exception if file doesn't exist
+     * Complexity: time - o(log(n)), space - o(1)
      */
-    public long getFileSize(String fileName) {
-        if(fileRepo.existsByName(fileName)){
-            return fileRepo.findByName(fileName).getSize();
-        }
-        return 0L;
+    public long getFileSize(String fileName) throws FileManageException {
+        File file = fileRepo.findById(fileName).orElseThrow(
+                () -> new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST)
+        );
+        return file.getSize();
     }
 
     /**
      * Returns the name of the file with the maximum size
-     * @return file with the largest size or null
+     * @return file with the largest size or exception if no files exist in system
      * Complexity: time - o(n), space - o(1)
      */
     public File getBiggestFile() throws FileManageException {
@@ -147,6 +142,7 @@ public class RequiredMethods {
      * hierarchical structure (a file should display all
      * file properties and a directory should display
      * all directory properties)
+     * Complexity: time - o(n), space - o(n)
      */
     public void showFileSystem(){
         List<Directory> directories = dirRepo.findAll();

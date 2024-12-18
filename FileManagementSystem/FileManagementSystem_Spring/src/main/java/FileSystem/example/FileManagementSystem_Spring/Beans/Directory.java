@@ -25,7 +25,7 @@ public class Directory {
     @Singular
     @OneToMany(cascade = CascadeType.ALL,
         orphanRemoval = true)
-    @JoinColumn(name = "directory_id")
+    @JoinColumn(name = "directory_name")
     private List<File> files;
     @NotNull
     private String parentDir;

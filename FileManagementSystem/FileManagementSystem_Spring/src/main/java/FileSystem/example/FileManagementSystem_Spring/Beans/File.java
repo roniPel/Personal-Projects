@@ -18,8 +18,8 @@ public class File {
     private String name;
     private long size;
     private LocalDate creationDate;
-    @Column(name = "directory_id")
+    @Column(name = "directory_name")
     @NotNull
-    private String directoryId;
+    private String directoryName;
 
 }
