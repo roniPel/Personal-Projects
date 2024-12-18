@@ -59,7 +59,7 @@ public class Test_CRUD implements CommandLineRunner {
 
     private void GenerateMainDirectory() throws FileManageException {
         System.out.println("*** Generate Main Directory ***");
-        System.out.println("Directory id: "+
+        System.out.println("Main Directory Added? "+
         requiredMethods.addDir(null,null) );
         System.out.println();
     }

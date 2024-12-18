@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @Getter
 public class File {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
 //    private Integer id;
-    @Length(min=1, max=32)
+    @Length(max=32)
     private String name;
     private long size;
     private LocalDate creationDate;

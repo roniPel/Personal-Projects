@@ -16,9 +16,9 @@ import java.util.List;
 @Setter
 public class Directory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
 //    private Integer id;
-    @Length(min=1, max=32)
+    //@Length(max=32)
     @Column(length = 32)
     private String name;
     private LocalDate creationDate;

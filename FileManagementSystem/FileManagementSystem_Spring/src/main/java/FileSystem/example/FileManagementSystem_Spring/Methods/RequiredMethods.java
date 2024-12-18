@@ -21,7 +21,7 @@ public class RequiredMethods {
     private final DirectoryRepository dirRepo;
     private final FileRepository fileRepo;
     private Integer mainDirId;
-    private final String mainDirName = "Main Directory";
+    private final String mainDirName = "Main";
     // Todo - finish all methods + add Complexity
 
     /**
@@ -35,7 +35,7 @@ public class RequiredMethods {
     public boolean addFile(String parentDirName, String fileName, Long fileSize) throws FileManageException {
         // Verifications:
         // Case: filename already exists
-        if(fileRepo.existsByName(fileName) || dirRepo.existsByName(fileName)) {
+        if(fileRepo.existsById(fileName) || dirRepo.existsById(fileName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
         // case: parent directory doesn't exist
@@ -73,9 +73,6 @@ public class RequiredMethods {
         // Verifications:
         // Special case - creation of first (main) directory
         if((parentDirName== null) && (dirName == null) ){
-            if(dirRepo.existsById(mainDirName)){
-                throw new FileManageException(Errors.GENERAL_ERROR);
-            }
             Directory mainDir = Directory.builder()
                     .name(mainDirName)
                     .creationDate(LocalDate.now())
@@ -89,7 +86,7 @@ public class RequiredMethods {
             throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
         }
         // case: directory/ file name already exists
-        if(dirRepo.existsById(dirName) || fileRepo.existsByName(dirName)) {
+        if(dirRepo.existsById(dirName) || fileRepo.existsById(dirName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
 
@@ -161,26 +158,33 @@ public class RequiredMethods {
 
     /**
      * Deletes the Directory or the File with this name
-     * @param name
+     * @param name - name of file or directory to delete
      * @return true if file or directory were deleted successfully, exception if failed
-     * Complexity: time - o(n), space - o(1)
+     * Complexity: time - o(n), space - o(n)
      */
     public boolean Delete(String name) throws FileManageException {
-        if(!fileRepo.existsByName(name)){
-            if(!dirRepo.existsByName(name)) {
+        // Verify file/ directory exists
+        if(!fileRepo.existsById(name)){
+            if(!dirRepo.existsById(name)) {
                 throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
             }
-            Directory directory = dirRepo.findByName(name);
-            //Todo - Delete all linked directories and files!
-            dirRepo.delete(directory);
+
+            // Case: delete a directory
+
+            // Step 1 - find all sub-files
+            List<File> filesToDelete = fileRepo.findByDirectoryName(name);
+            // Step 2 - find all subdirectories
+            List<Directory> directoriesToDelete = dirRepo.findByParentDir(name);
+
+            // Step 3 - delete all sub-files and sub-directories
+            fileRepo.deleteAll(filesToDelete);
+            dirRepo.deleteAll(directoriesToDelete);
             return true;
         }
-        File file = fileRepo.findByName(name);
+
+        // Case: delete a file
+        File file = fileRepo.findById(name).get();
         fileRepo.delete(file);
         return true;
-    }
-
-    public void setMainDirId(Integer mainDirId) {
-        this.mainDirId = mainDirId;
     }
 }
