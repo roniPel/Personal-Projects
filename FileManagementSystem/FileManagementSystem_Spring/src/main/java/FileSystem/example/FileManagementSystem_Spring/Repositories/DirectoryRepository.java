@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DirectoryRepository extends JpaRepository<Directory,Integer> {
+public interface DirectoryRepository extends JpaRepository<Directory,String> {
     Directory findByName(String name);
 
     boolean existsByName(String parentDirName);

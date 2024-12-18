@@ -13,13 +13,13 @@ import java.time.LocalDate;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+//    private Integer id;
     @Length(min=1, max=32)
     private String name;
     private long size;
     private LocalDate creationDate;
     @Column(name = "directory_id")
     @NotNull
-    private Integer directoryId;
+    private String directoryId;
 
 }

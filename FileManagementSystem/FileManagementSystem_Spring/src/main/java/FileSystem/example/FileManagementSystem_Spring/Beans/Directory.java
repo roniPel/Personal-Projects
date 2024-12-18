@@ -17,7 +17,7 @@ import java.util.List;
 public class Directory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+//    private Integer id;
     @Length(min=1, max=32)
     @Column(length = 32)
     private String name;
@@ -28,6 +28,6 @@ public class Directory {
     @JoinColumn(name = "directory_id")
     private List<File> files;
     @NotNull
-    private int parentDirId;
+    private String parentDir;
 
 }

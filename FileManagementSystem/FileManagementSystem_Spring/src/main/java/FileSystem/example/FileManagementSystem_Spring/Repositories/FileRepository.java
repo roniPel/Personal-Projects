@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.Optional;
 
 @Repository
-public interface FileRepository extends JpaRepository<File, Integer> {
+public interface FileRepository extends JpaRepository<File, String> {
     File findByName(String fileName);
 
     boolean existsByName(String fileName);

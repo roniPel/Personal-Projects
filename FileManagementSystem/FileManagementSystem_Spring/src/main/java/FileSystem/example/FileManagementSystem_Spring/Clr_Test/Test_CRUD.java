@@ -98,7 +98,7 @@ public class Test_CRUD implements CommandLineRunner {
     private void AddDir(String parentDirName, String dirName) throws FileManageException {
         System.out.println("*** Add Directory Method ***");
         //System.out.println("Please insert a Directory Name: ");
-        System.out.println("New Directory Id: "+
+        System.out.println("New Directory added? "+
                 requiredMethods.addDir(parentDirName,dirName));
         System.out.println();
     }
@@ -106,7 +106,7 @@ public class Test_CRUD implements CommandLineRunner {
     private void AddFile(String parentDirName, String fileName) throws FileManageException {
         System.out.println("*** Add File Method ***");
         long fileSize = FactoryUtils.GenerateRandomSize();
-        System.out.println("New File Id: "+
+        System.out.println("New File added? "+
                 requiredMethods.addFile(parentDirName,fileName,fileSize) );
         System.out.println();
     }

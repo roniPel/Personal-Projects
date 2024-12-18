@@ -21,6 +21,7 @@ public class RequiredMethods {
     private final DirectoryRepository dirRepo;
     private final FileRepository fileRepo;
     private Integer mainDirId;
+    private final String mainDirName = "Main Directory";
     // Todo - finish all methods + add Complexity
 
     /**
@@ -29,34 +30,31 @@ public class RequiredMethods {
      * @param fileName
      * @param fileSize
      * @return true if object was created successfully, exception if it was not created
+     * Complexity: time - o(n), space - o(1)
      */
-    public int addFile(String parentDirName, String fileName, Long fileSize) throws FileManageException {
+    public boolean addFile(String parentDirName, String fileName, Long fileSize) throws FileManageException {
         if(fileRepo.existsByName(fileName) || dirRepo.existsByName(fileName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
         Directory parentDir;
-        try {
-            parentDir = dirRepo.findByName(parentDirName);
-            File file = File.builder()
-                    .creationDate(LocalDate.now())
-                    .name(fileName)
-                    .size(fileSize)
-                    .directoryId(parentDir.getId())
-                    .build();
-            fileRepo.saveAndFlush(file);
-            System.out.println(file);
+        parentDir = dirRepo.findById(parentDirName).orElseThrow(
+                ()-> new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST)
+        );
+        File file = File.builder()
+                .creationDate(LocalDate.now())
+                .name(fileName)
+                .size(fileSize)
+                .directoryId(parentDir.getName())
+                .build();
+        fileRepo.saveAndFlush(file);
+        System.out.println(file);
 
-            List<File> files = new ArrayList<>();;
-            files.add(file);
-            parentDir.setFiles(files);
-            //fileRepo.saveAll(files);
-            dirRepo.saveAndFlush(parentDir);
-            return fileRepo.findByName(fileName).getId();
-        } catch (LazyInitializationException e) {
-            throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
-        }
-
-
+        List<File> files = new ArrayList<>();;
+        files.add(file);
+        parentDir.setFiles(files);
+        //fileRepo.saveAll(files);
+        dirRepo.saveAndFlush(parentDir);
+        return true;
     }
 
     private void SaveFiles(List<File> files) {
@@ -67,38 +65,36 @@ public class RequiredMethods {
      * @param parentDirName
      * @param dirName
      * @return id of object if object was created successfully, exception if it was not created
+     * @return true if object was created successfully, exception if it was not created
+     * Complexity: time - o(n), space - o(1)
      */
-    public int addDir(String parentDirName, String dirName) throws FileManageException {
+    public boolean addDir(String parentDirName, String dirName) throws FileManageException {
         // Special case - creation of first (main) directory
         if((parentDirName== null) && (dirName == null) ){
             Directory mainDir = Directory.builder()
-                    .name("Main Directory")
+                    .name(mainDirName)
                     .creationDate(LocalDate.now())
-                    .parentDirId(0)
+                    .parentDir("")
                     .build();
             dirRepo.saveAndFlush(mainDir);
-            setMainDirId(dirRepo.findByName("Main Directory").getId());
-            return mainDirId;
+            return true;
         }
-        if(dirRepo.existsByName(dirName) || fileRepo.existsByName(dirName)) {
+        if(dirRepo.existsById(dirName) || fileRepo.existsByName(dirName)) {
             throw new FileManageException(Errors.FILE_DIR_NAME_ALREADY_EXISTS);
         }
-        int parentDirId = mainDirId;
-        Directory parentDir = FindDirId(parentDirName);
-        if(parentDir != null) {
-            parentDirId = parentDir.getId();
+        if(!dirRepo.existsByName(parentDirName)){
+            throw new FileManageException(Errors.FILE_DIR_DOES_NOT_EXIST);
         }
-        else {
-            Directory parentDirectory = Directory.builder()
-                    .creationDate(LocalDate.now())
-                    .name(parentDirName)
-                    .parentDirId(parentDirId)
-                    .build();
-            dirRepo.saveAndFlush(parentDirectory);
-            System.out.println("Created Parent Directory: ");
-            System.out.println(parentDirectory);
-            parentDirId = parentDirectory.getId();
-        }
+        //Todo - finish method
+        Directory parentDirectory = Directory.builder()
+                .creationDate(LocalDate.now())
+                .name(parentDirName)
+                .parentDir(parentDirName)
+                .build();
+        dirRepo.saveAndFlush(parentDirectory);
+        System.out.println("Created Parent Directory: ");
+        System.out.println(parentDirectory.getName());
+
 
         Directory directory = Directory.builder()
                 .creationDate(LocalDate.now())
@@ -114,6 +110,7 @@ public class RequiredMethods {
      *
      * @param parentDirName
      * @return directory Id if exists, null if it doesn't exist
+     * Complexity: time - o(n), space - o(1)
      */
     private Directory FindDirId(String parentDirName) throws FileManageException {
         if(!dirRepo.existsByName(parentDirName)) {
@@ -137,6 +134,7 @@ public class RequiredMethods {
     /**
      * Returns the name of the file with the maximum size
      * @return file with the largest size or null
+     * Complexity: time - o(n), space - o(1)
      */
     public File getBiggestFile() throws FileManageException {
         return fileRepo.findTopByOrderBySizeDesc()
@@ -169,6 +167,7 @@ public class RequiredMethods {
      * Deletes the Directory or the File with this name
      * @param name
      * @return true if file or directory were deleted successfully, exception if failed
+     * Complexity: time - o(n), space - o(1)
      */
     public boolean Delete(String name) throws FileManageException {
         if(!fileRepo.existsByName(name)){
