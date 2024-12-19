@@ -23,7 +23,7 @@ public class Test_CRUD implements CommandLineRunner {
             // CRUD - Create, Read, Update, Delete
             GenerateMainDirectory();
             // Add Dir
-            String parentDirName = "Main Directory";
+            String parentDirName = "Main";
             String dirName = "Test Dir 1";
             AddDir(parentDirName,dirName);
 

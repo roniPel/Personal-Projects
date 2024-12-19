@@ -6,6 +6,7 @@ import FileSystem.example.FileManagementSystem_Spring.Exceptions.Errors;
 import FileSystem.example.FileManagementSystem_Spring.Exceptions.FileManageException;
 import FileSystem.example.FileManagementSystem_Spring.Repositories.DirectoryRepository;
 import FileSystem.example.FileManagementSystem_Spring.Repositories.FileRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.LazyInitializationException;
 import org.springframework.stereotype.Component;
@@ -91,21 +92,12 @@ public class RequiredMethods {
         }
 
         // Create new directory
-        Directory parentDirectory = Directory.builder()
-                .creationDate(LocalDate.now())
-                .name(parentDirName)
-                .parentDir(parentDirName)
-                .build();
-        dirRepo.saveAndFlush(parentDirectory);
-        System.out.println("Created Parent Directory: ");
-        System.out.println(parentDirectory.getName());
-
-
         Directory directory = Directory.builder()
                 .creationDate(LocalDate.now())
                 .name(dirName)
+                .parentDir(parentDirName)
                 .build();
-        System.out.println(directory.toString());
+        //System.out.println(directory.toString());
         dirRepo.saveAndFlush(directory);
         return true;
     }
@@ -141,6 +133,7 @@ public class RequiredMethods {
      * all directory properties)
      * Complexity: time - o(n), space - o(n)
      */
+    @Transactional
     public void showFileSystem(){
         List<Directory> directories = dirRepo.findAll();
         System.out.println("Directories: "+directories);
