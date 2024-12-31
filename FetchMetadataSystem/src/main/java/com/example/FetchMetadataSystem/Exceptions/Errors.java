@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 @Getter
-@Component
 public enum Errors {
     INVALID_URL("\nThe inserted URL is invalid.  Please try a different URL. \n"),
     NETWORK_ISSUE("\nThere was a problem with the network.  Please fix the network issue and then try again. \n"),

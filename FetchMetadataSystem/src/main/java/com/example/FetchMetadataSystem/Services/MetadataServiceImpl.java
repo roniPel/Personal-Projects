@@ -4,21 +4,33 @@ import com.example.FetchMetadataSystem.Beans.Metadata;
 import com.example.FetchMetadataSystem.Exceptions.Errors;
 import com.example.FetchMetadataSystem.Exceptions.FetchMetadataException;
 import com.example.FetchMetadataSystem.Repositories.MetadataRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.lang.runtime.ObjectMethods;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MetadataServiceImpl implements MetadataService{
     private final MetadataRepository metaRepo;
+    private final RestTemplate restTemplate;
     @Override
     public Metadata FetchMetadata(String url) throws FetchMetadataException, IOException {
+        //Todo - verify URL is valid
+
+        // Get all metadata as string
+        String myMetaData = restTemplate.getForObject(url, String.class);
+        // Use object mapper to map items in the json object
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Get snippet data, by using items field
+        var myData = objectMapper.readTree(myMetaData).get()
 
         try {
             // Fetch metadata using Jsoup
@@ -28,11 +40,14 @@ public class MetadataServiceImpl implements MetadataService{
             String description = document.select("meta[name=description").attr("content");
             String imageURL = document.select("meta[name=imageURL").attr("content");
 
-            return Metadata.builder()
+            Metadata metadata = Metadata.builder()
                     .title(title)
                     .description(description)
                     .imageURL(imageURL)
                     .build();
+
+            metaRepo.saveAndFlush(metadata);
+            return metadata;
         } catch (IOException ioE) {
            throw new FetchMetadataException(Errors.NETWORK_ISSUE);
         } catch (Exception e) {
