@@ -7,6 +7,7 @@ import com.example.FetchMetadataSystem.Repositories.MetadataRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class MetadataServiceImpl implements MetadataService{
         // Use object mapper to map items in the json object
         ObjectMapper objectMapper = new ObjectMapper();
         // Get snippet data, by using items field
-        var myData = objectMapper.readTree(myMetaData).get()
+        var myData = objectMapper.readTree(myMetaData).get("Items").get(0).get("");
 
         try {
             // Fetch metadata using Jsoup
