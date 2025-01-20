@@ -41,10 +41,18 @@ public class MetadataServiceImpl implements MetadataService{
             String description = document.select("meta[name=description").attr("content");
             String imageURL = document.select("meta[name=imageURL").attr("content");
 
+//            Metadata metadata = Metadata.builder()
+//                    .title("test")
+//                    .imageURL("test")
+//                    .description("test")
+//                    .URL(url)
+//                    .build();
+
             Metadata metadata = Metadata.builder()
                     .title(title)
                     .description(description)
                     .imageURL(imageURL)
+                    .URL(url)
                     .build();
 
             metaRepo.saveAndFlush(metadata);
