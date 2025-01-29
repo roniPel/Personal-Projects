@@ -6,7 +6,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class SortFilesUtility {
-    File ExtractMetaData() {
+    /**
+     * Extracts Metadata from uploaded file and creates a 'File' object with relevant data
+     * @param file Uploaded file
+     * @return File with relevant metadata
+     */
+    File ExtractMetaData(Object file) {
 
     }
 

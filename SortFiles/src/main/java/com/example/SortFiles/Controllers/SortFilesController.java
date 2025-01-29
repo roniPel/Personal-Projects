@@ -33,6 +33,6 @@ public class SortFilesController {
     @GetMapping(value = {"DownloadSortedFiles"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> DownloadSortedFiles() {
-        return new ResponseEntity<>(service.SortfilesByCreationDate(),HttpStatus.OK);
+        return new ResponseEntity<>(service.GetAllFiles(),HttpStatus.OK);
     }
 }
